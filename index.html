@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Assignment Directives — Deel Product</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ════════════════════════════════════════════
+   GLOBAL RESET + TOKENS
+   ════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F4F3EF;
+  --surface: #FAFAF8;
+  --white: #FFFFFF;
+  --border: #E2E1DB;
+  --border-strong: #C8C7C0;
+  --text-primary: #141412;
+  --text-secondary: #6B6A63;
+  --text-muted: #9B9A93;
+  --deel-green: #00C97C;
+  --deel-green-dark: #00A366;
+  --deel-green-light: #E6FBF3;
+  --blue: #2D6BE4;
+  --blue-light: #EBF0FC;
+  --amber: #D97706;
+  --amber-light: #FEF3C7;
+  --red: #DC2626;
+  --red-light: #FEE2E2;
+  --purple: #7C3AED;
+  --purple-light: #EDE9FE;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+html, body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  height: 100%;
+}
+
+/* ════════════════════════════════════════════
+   GLOBAL TOP NAV
+   ════════════════════════════════════════════ */
+#global-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 9999;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.gnav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gnav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gnav-logo-mark {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: var(--deel-green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800;
+  color: #0a0a08;
+  font-family: 'DM Mono', monospace;
+}
+
+.gnav-logo-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.01em;
+}
+
+.gnav-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,0.15);
+}
+
+.gnav-project {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+.gnav-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,0.07);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.gnav-tab {
+  padding: 5px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gnav-tab:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.07);
+}
+
+.gnav-tab.active {
+  background: white;
+  color: var(--text-primary);
+}
+
+.gnav-tab .tab-icon {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.gnav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gnav-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+}
+
+.gnav-badge.p0 {
+  background: rgba(220,38,38,0.25);
+  color: #FCA5A5;
+}
+
+/* ════════════════════════════════════════════
+   VIEW WRAPPERS
+   ════════════════════════════════════════════ */
+.view { display: none; padding-top: 48px; }
+.view.active { display: block; }
+
+/* ════════════════════════════════════════════
+   BRIEF STYLES (scoped to .brief-wrap)
+   ════════════════════════════════════════════ */
+.brief-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  background: white;
+  min-height: calc(100vh - 48px);
+}
+
+.brief-wrap h1 { font-size: 26px; font-weight: 600; color: #0f0f0f; margin-bottom: 6px; }
+.brief-wrap h2 { font-size: 17px; font-weight: 600; color: #0f0f0f; margin: 40px 0 12px; padding-bottom: 8px; border-bottom: 1.5px solid #e8e8e8; }
+.brief-wrap h3 { font-size: 14px; font-weight: 600; color: #0f0f0f; margin: 20px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+.brief-wrap p { margin-bottom: 12px; color: #2a2a2a; }
+.brief-wrap ul, .brief-wrap ol { margin: 8px 0 12px 20px; }
+.brief-wrap li { margin-bottom: 6px; color: #2a2a2a; }
+.brief-wrap strong { font-weight: 600; color: #0f0f0f; }
+
+.brief-wrap .meta-bar { display: flex; flex-wrap: wrap; gap: 20px; margin: 16px 0 36px; padding: 14px 18px; background: #f7f7f5; border-radius: 8px; border: 0.5px solid #e0e0dc; }
+.brief-wrap .meta-item { display: flex; flex-direction: column; gap: 2px; }
+.brief-wrap .meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #888; }
+.brief-wrap .meta-value { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.brief-wrap .b-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+.brief-wrap .b-badge-draft { background: #FFF3DC; color: #8a5800; }
+.brief-wrap .b-badge-p0 { background: #FFE8E8; color: #8a1f1f; }
+.brief-wrap .b-badge-new { background: #E1F0FF; color: #1a5fa0; }
+.brief-wrap .b-badge-modified { background: #FFF3DC; color: #8a5800; }
+.brief-wrap .b-badge-unchanged { background: #EAFAF1; color: #1a6e3a; }
+.brief-wrap .b-badge-outscope { background: #f3f4f6; color: #6b7280; }
+
+.brief-wrap .callout { padding: 14px 18px; border-radius: 8px; margin: 16px 0; font-size: 14px; }
+.brief-wrap .callout-info { background: #EEF6FF; border-left: 3px solid #3b82f6; color: #1a3a6b; }
+.brief-wrap .callout-warning { background: #FFFBEB; border-left: 3px solid #f59e0b; color: #78350f; }
+.brief-wrap .callout-success { background: #F0FDF4; border-left: 3px solid #22c55e; color: #14532d; }
+
+.brief-wrap table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 14px; }
+.brief-wrap th { text-align: left; padding: 9px 12px; background: #f7f7f5; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; border-bottom: 1px solid #e0e0dc; }
+.brief-wrap td { padding: 10px 12px; border-bottom: 0.5px solid #ececec; color: #2a2a2a; vertical-align: top; }
+.brief-wrap tr:last-child td { border-bottom: none; }
+
+.brief-wrap .flow-container { margin: 20px 0; }
+.brief-wrap .flow-step { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 4px; }
+.brief-wrap .flow-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.brief-wrap .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.brief-wrap .step-num-blue { background: #dbeafe; color: #1e40af; }
+.brief-wrap .step-num-green { background: #dcfce7; color: #166534; }
+.brief-wrap .step-num-amber { background: #fef9c3; color: #854d0e; }
+.brief-wrap .step-connector { width: 2px; flex: 1; min-height: 20px; background: #e5e7eb; margin: 3px 0; }
+.brief-wrap .flow-content { padding: 3px 0 16px; flex: 1; }
+.brief-wrap .flow-title { font-size: 14px; font-weight: 600; color: #0f0f0f; margin-bottom: 2px; }
+.brief-wrap .flow-subtitle { font-size: 13px; color: #555; line-height: 1.5; }
+.brief-wrap .flow-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.brief-wrap .tag-unchanged { background: #EAFAF1; color: #1a6e3a; }
+.brief-wrap .tag-new { background: #E1F0FF; color: #1a5fa0; }
+.brief-wrap .tag-modified { background: #FFF3DC; color: #8a5800; }
+
+.brief-wrap .risk-table td:first-child { font-weight: 500; width: 24%; }
+.brief-wrap .risk-high { color: #b91c1c; font-weight: 600; }
+.brief-wrap .risk-med { color: #b45309; font-weight: 600; }
+.brief-wrap .risk-low { color: #166534; font-weight: 600; }
+
+.brief-wrap .section-divider { border: none; border-top: 1px solid #ececec; margin: 32px 0; }
+.brief-wrap .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+.brief-wrap .scope-card { padding: 14px 16px; border-radius: 8px; font-size: 13px; }
+.brief-wrap .in-scope { background: #f0fdf4; border: 0.5px solid #bbf7d0; }
+.brief-wrap .out-scope { background: #fef2f2; border: 0.5px solid #fecaca; }
+.brief-wrap .scope-card h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.brief-wrap .in-scope h4 { color: #166534; }
+.brief-wrap .out-scope h4 { color: #991b1b; }
+.brief-wrap .scope-card li { margin-bottom: 4px; color: #374151; }
+
+.brief-wrap .phase-row { display: flex; gap: 0; margin: 16px 0; border-radius: 8px; overflow: hidden; border: 0.5px solid #e0e0dc; }
+.brief-wrap .phase-block { flex: 1; padding: 14px 16px; border-right: 0.5px solid #e0e0dc; }
+.brief-wrap .phase-block:last-child { border-right: none; }
+.brief-wrap .phase-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.brief-wrap .phase-1 .phase-label { color: #1a5fa0; }
+.brief-wrap .phase-2 .phase-label { color: #7c3aed; }
+.brief-wrap .phase-3 .phase-label { color: #b45309; }
+.brief-wrap .phase-1 { background: #f0f7ff; }
+.brief-wrap .phase-2 { background: #f5f3ff; }
+.brief-wrap .phase-3 { background: #fffbeb; }
+.brief-wrap .phase-title { font-size: 13px; font-weight: 600; color: #0f0f0f; margin-bottom: 4px; }
+.brief-wrap .phase-detail { font-size: 12px; color: #555; line-height: 1.5; }
+
+.brief-wrap .open-q { counter-reset: q; }
+.brief-wrap .open-q li { counter-increment: q; list-style: none; margin-bottom: 10px; padding-left: 28px; position: relative; font-size: 14px; }
+.brief-wrap .open-q li::before { content: "Q" counter(q); position: absolute; left: 0; font-size: 11px; font-weight: 700; background: #f0f0ee; color: #666; padding: 1px 5px; border-radius: 4px; top: 2px; }
+
+.brief-wrap .b-footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #ececec; font-size: 12px; color: #999; display: flex; justify-content: space-between; }
+
+/* ════════════════════════════════════════════
+   PROTOTYPE STYLES
+   ════════════════════════════════════════════ */
+#view-proto { height: calc(100vh - 48px); overflow: hidden; }
+
+.shell { display: flex; height: 100%; overflow: hidden; }
+
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.logo-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--text-primary); display: flex; align-items: center; justify-content: center; }
+.logo-mark span { color: white; font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.logo-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.logo-badge { font-size: 10px; font-weight: 600; background: var(--deel-green-light); color: var(--deel-green-dark); padding: 2px 7px; border-radius: 20px; margin-left: 4px; }
+
+.perspective-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+.perspective-tabs { display: flex; flex-direction: column; gap: 3px; }
+.ptab { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 13px; font-weight: 500; color: var(--text-secondary); border: none; background: none; text-align: left; width: 100%; }
+.ptab:hover { background: var(--bg); color: var(--text-primary); }
+.ptab.active { background: var(--text-primary); color: white; }
+.ptab .pdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ptab-client .pdot { background: var(--blue); }
+.ptab-ic .pdot { background: var(--deel-green); }
+.ptab-ops .pdot { background: var(--purple); }
+.ptab.active .pdot { background: white; opacity: 0.7; }
+
+.sidebar-steps { padding: 16px 20px; flex: 1; }
+.steps-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; }
+.step-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; margin-bottom: 2px; }
+.step-item:hover { background: var(--bg); }
+.step-item.active { background: var(--blue-light); }
+.step-item.done .step-dot { background: var(--deel-green); border-color: var(--deel-green); }
+.step-line-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; padding-top: 2px; }
+.step-dot { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border-strong); background: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; transition: all 0.2s; }
+.step-item.active .step-dot { border-color: var(--blue); background: var(--blue); color: white; }
+.step-connector-v { width: 1.5px; height: 14px; background: var(--border); margin: 2px 0; }
+.step-info { flex: 1; padding-top: 1px; }
+.step-name { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+.step-item.active .step-name { color: var(--blue); }
+.step-party { font-size: 11px; color: var(--text-muted); }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { height: 56px; flex-shrink: 0; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-breadcrumb { font-size: 13px; color: var(--text-muted); }
+.topbar-breadcrumb span { color: var(--text-primary); font-weight: 500; }
+.step-counter { font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text-muted); background: var(--bg); padding: 3px 10px; border-radius: 20px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.nav-btn { padding: 7px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); background: white; color: var(--text-primary); font-family: 'DM Sans', sans-serif; }
+.nav-btn:hover { background: var(--bg); }
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.nav-btn.primary { background: var(--text-primary); color: white; border-color: var(--text-primary); }
+.nav-btn.primary:hover { background: #2a2a28; }
+.content { flex: 1; overflow-y: auto; padding: 32px 40px; }
+
+.screen { display: none; animation: fadeIn 0.2s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.screen-title { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.screen-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; }
+
+.card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.alert { padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 16px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-info { background: var(--blue-light); border: 1px solid #B8D0F7; color: #1a3a6b; }
+.alert-warning { background: var(--amber-light); border: 1px solid #FCD34D; color: #78350f; }
+.alert-success { background: var(--deel-green-light); border: 1px solid #A7F3D0; color: #065F46; }
+.alert-danger { background: var(--red-light); border: 1px solid #FCA5A5; color: #7f1d1d; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.field-value { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.field-value.mono { font-family: 'DM Mono', monospace; font-size: 13px; }
+
+.p-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.p-badge-pending { background: var(--amber-light); color: var(--amber); }
+.p-badge-review { background: var(--blue-light); color: var(--blue); }
+.p-badge-active { background: var(--deel-green-light); color: var(--deel-green-dark); }
+.p-badge-complete { background: #F0FDF4; color: #166534; }
+.p-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.upload-zone { border: 2px dashed var(--border-strong); border-radius: var(--radius-md); padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); margin-bottom: 16px; }
+.uploaded-file { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--deel-green-light); border: 1px solid #A7F3D0; border-radius: var(--radius-md); margin-bottom: 16px; }
+.file-check { margin-left: auto; color: var(--deel-green-dark); font-size: 16px; font-weight: 700; }
+
+.contractor-select { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--white); border: 1.5px solid var(--blue); border-radius: var(--radius-md); margin-bottom: 16px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #E0E7FF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: var(--blue); flex-shrink: 0; }
+.contractor-name { font-size: 14px; font-weight: 600; }
+.contractor-meta { font-size: 12px; color: var(--text-muted); }
+.check-mark { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+
+.input-field { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); background: white; outline: none; transition: border-color 0.15s; }
+.input-field:focus { border-color: var(--blue); }
+.input-group { margin-bottom: 14px; }
+.input-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+.wallet-card { background: linear-gradient(135deg, #141412 0%, #2a2a26 100%); border-radius: var(--radius-xl); padding: 28px; color: white; margin-bottom: 16px; position: relative; overflow: hidden; }
+.wallet-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+.wallet-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 8px; }
+.wallet-total { font-size: 32px; font-weight: 300; font-family: 'DM Mono', monospace; letter-spacing: -1px; margin-bottom: 20px; }
+.wallet-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.wallet-item-label { font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.wallet-item-value { font-size: 16px; font-weight: 500; font-family: 'DM Mono', monospace; }
+.wallet-item-value.reserved { color: #FCD34D; }
+.wallet-item-value.available { color: var(--deel-green); }
+.wallet-progress { margin-top: 20px; }
+.progress-bar-bg { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--deel-green); border-radius: 3px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 11px; opacity: 0.5; margin-top: 6px; }
+
+.check-list { display: flex; flex-direction: column; gap: 10px; }
+.check-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg); border-radius: var(--radius-md); }
+.check-item.pass { background: var(--deel-green-light); }
+.check-item.fail { background: var(--red-light); }
+.check-item.pending { background: var(--amber-light); }
+.check-status { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.check-item.pass .check-status { background: var(--deel-green-dark); color: white; }
+.check-item.fail .check-status { background: var(--red); color: white; }
+.check-item.pending .check-status { background: var(--amber); color: white; }
+.check-item-text { font-size: 13px; font-weight: 500; flex: 1; }
+.check-item-sub { font-size: 11px; color: var(--text-muted); }
+
+.notif-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+.notif-header { padding: 16px 20px; background: var(--amber-light); border-bottom: 1px solid #FCD34D; display: flex; align-items: center; gap: 10px; }
+.notif-icon { font-size: 20px; }
+.notif-title { font-size: 14px; font-weight: 600; color: #78350f; }
+.notif-body { padding: 20px; }
+.notif-detail-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.notif-detail-row:last-of-type { border-bottom: none; }
+.notif-key { color: var(--text-muted); }
+.notif-val { font-weight: 600; color: var(--text-primary); }
+.notif-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn { padding: 10px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.btn-accept { background: var(--deel-green); color: white; }
+.btn-accept:hover { background: var(--deel-green-dark); }
+.btn-dispute { background: white; border: 1.5px solid var(--border-strong); color: var(--text-primary); }
+.btn-dispute:hover { background: var(--bg); }
+
+.advice-header { background: var(--text-primary); color: white; padding: 20px 24px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; display: flex; justify-content: space-between; align-items: flex-start; }
+.advice-body { background: white; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 24px; }
+.advice-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.advice-row:last-child { border-bottom: none; }
+.advice-row.total { font-weight: 700; font-size: 14px; }
+.advice-row.redirected { color: var(--amber); }
+.advice-row.received { color: var(--deel-green-dark); }
+
+.balance-tracker { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 16px; }
+.tracker-bar-wrap { margin: 16px 0 8px; }
+.tracker-bar-bg { height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; }
+.tracker-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--deel-green), #00E090); }
+.tracker-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+.two-col-proto { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.stat-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; }
+.stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+.stat-value { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text-primary); }
+.stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1.5px solid var(--border); }
+.data-table td { padding: 12px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg); }
+
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 14px; }
+.tl-left { display: flex; flex-direction: column; align-items: center; width: 30px; flex-shrink: 0; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--deel-green); margin-top: 5px; flex-shrink: 0; }
+.tl-dot.pending { background: var(--border-strong); }
+.tl-line { width: 2px; flex: 1; background: var(--border); min-height: 20px; margin: 3px 0; }
+.tl-content { padding: 0 0 20px; flex: 1; }
+.tl-time { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-bottom: 3px; }
+.tl-event { font-size: 13px; font-weight: 500; }
+.tl-detail { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.pov-strip { display: flex; gap: 0; background: white; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 24px; }
+.pov-item { flex: 1; padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted); border-right: 1px solid var(--border); text-align: center; }
+.pov-item:last-child { border-right: none; }
+.pov-item.active { background: var(--text-primary); color: white; }
+.pov-item .pov-role { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     GLOBAL NAV
+     ══════════════════════════════════════════ -->
+<nav id="global-nav">
+  <div class="gnav-left">
+    <div class="gnav-logo">
+      <div class="gnav-logo-mark">D</div>
+      <span class="gnav-logo-name">Deel</span>
+    </div>
+    <div class="gnav-sep"></div>
+    <span class="gnav-project">Payment Assignment Directives</span>
+  </div>
+
+  <div class="gnav-tabs">
+    <button class="gnav-tab active" id="tab-brief" onclick="showView('brief')">
+      <span class="tab-icon">📄</span> Product brief
+    </button>
+    <button class="gnav-tab" id="tab-proto" onclick="showView('proto')">
+      <span class="tab-icon">⚡</span> Interactive prototype
+    </button>
+  </div>
+
+  <div class="gnav-right">
+    <span class="gnav-badge p0">P0 · Draft</span>
+    <span class="gnav-badge">IC & CoR · US v1</span>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     VIEW — PRODUCT BRIEF
+     ══════════════════════════════════════════ -->
+<div class="view active" id="view-brief">
+<div class="brief-wrap">
+
+<h1>Payment assignment directives</h1>
+<p style="color:#555; font-size:14px; margin-top:4px;">Product brief — IC &amp; Contractor of Record</p>
+
+<div class="meta-bar">
+  <div class="meta-item"><span class="meta-label">Status</span><span class="meta-value"><span class="b-badge b-badge-draft">Draft</span></span></div>
+  <div class="meta-item"><span class="meta-label">Priority</span><span class="meta-value"><span class="b-badge b-badge-p0">P0 — client committed</span></span></div>
+  <div class="meta-item"><span class="meta-label">Product area</span><span class="meta-value">IC payments / CoR</span></div>
+  <div class="meta-item"><span class="meta-label">Geography</span><span class="meta-value">US only (v1)</span></div>
+  <div class="meta-item"><span class="meta-label">Author</span><span class="meta-value">Product Operations</span></div>
+  <div class="meta-item"><span class="meta-label">Last updated</span><span class="meta-value">April 2026</span></div>
+</div>
+
+<h2>1. Problem statement</h2>
+<p>A Deel client has a US-based independent contractor workforce where some contractors have outstanding financial obligations — including court-ordered child support, IRS tax levies, and commercial debt assignments under UCC § 9-406. The client needs to ensure these obligations are honored as part of the contractor payment cycle.</p>
+<p>Deel currently has no product capability to support this. The sales team has committed to delivering this as part of the client deal. Without it, Deel cannot retain this client and will have no scalable answer for future clients who face the same requirement.</p>
+
+<div class="callout callout-warning">
+  <strong>Important distinction:</strong> The sample document provided by the client is a UCC § 9-406 commercial receivables assignment — not a court-issued wage garnishment. These are different legal instruments with different obligations, verification paths, and product requirements. This brief covers both, clearly separated.
+</div>
+
+<hr class="section-divider">
+<h2>2. Background and context</h2>
+
+<h3>Types of payment directives in scope</h3>
+<table>
+  <thead><tr><th>Type</th><th>Issued by</th><th>Legally mandatory?</th><th>Applies to ICs?</th><th>V1 scope</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Income Withholding Order (IWO)</strong><br><span style="font-size:12px;color:#666;">Child support</span></td><td>Court / OCSE</td><td>Yes</td><td>Yes — broadly defined in most states</td><td><span class="b-badge b-badge-p0">Yes</span></td></tr>
+    <tr><td><strong>IRS / state tax levy</strong></td><td>IRS / state tax agency</td><td>Yes</td><td>Yes — served on payer</td><td><span class="b-badge b-badge-p0">Yes</span></td></tr>
+    <tr><td><strong>UCC § 9-406 assignment</strong><br><span style="font-size:12px;color:#666;">Commercial / MCA</span></td><td>Private assignee (e.g. East Shore Equities)</td><td>No — commercial arrangement</td><td>Yes — IC voluntarily assigned receivables</td><td><span class="b-badge b-badge-p0">Yes</span></td></tr>
+    <tr><td><strong>Consumer debt garnishment</strong></td><td>Court (civil judgment)</td><td>State-dependent</td><td>Varies by state</td><td><span class="b-badge b-badge-outscope">Out of scope</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Deel's legal position</h3>
+<p>Deel acts as a <strong>payment agent</strong> — the client funds Deel, and Deel disburses to the IC. For government-issued orders (IWOs, IRS levies), Deel may already be a legally obligated "income withholder" as the entity that disburses funds. For UCC § 9-406 notices, the obligation sits primarily with the client (the account debtor), and Deel executes on the client's instruction.</p>
+<p>Deel is <strong>not</strong> building a payroll garnishment product. It's building a payment instruction execution layer that processes legally required or client-directed payment assignments from the IC's own Deel account.</p>
+
+<h3>Misclassification risk</h3>
+<p>Processing payment assignments from the IC's own Deel balance — rather than withholding at the point of disbursement — keeps Deel's role clearly as a payment account rather than an employer withholding wages. Key signals to avoid: withholding from IC payments before disbursement, CCPA disposable income calculations, using "wage garnishment" in IC-facing copy, receiving directives directly from assignees, and doing new hire reporting on the client's behalf.</p>
+
+<h3>About the sample document (UCC § 9-406)</h3>
+<p>The document provided is a commercial receivables assignment from East Shore Equities SMB, LLC (a Merchant Cash Advance company) directed at LaserShip, Inc. D/B/A OnTrac Final Mile. The IC — Jenniffer Planet LLC — voluntarily assigned her future receivables as collateral for a cash advance. East Shore filed a UCC-1 Financing Statement with the Ohio Secretary of State on February 2, 2026 (FS# OH00296077906). Total assigned amount: $19,447.38.</p>
+
+<hr class="section-divider">
+<h2>3. Proposed solution</h2>
+<p>Build a <strong>Payment Assignment Directives</strong> module within the existing IC and CoR payment infrastructure.</p>
+<div class="callout callout-success">
+  <strong>Core mechanic:</strong> Deel disburses the full invoice amount to the IC's Deel account as normal, ring-fences the portion subject to the directive, then fires an automatic outgoing payment to the designated authority or assignee. The IC receives their remaining balance. The payment originates from the IC's own Deel account — not as a deduction by Deel or the client.
+</div>
+
+<hr class="section-divider">
+<h2>4. Product flow</h2>
+
+<div class="flow-container">
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-green">1</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">IC raises invoice <span class="flow-tag tag-unchanged">Unchanged</span></div><div class="flow-subtitle">IC raises invoice to client as normal. No directive logic at this stage.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-green">2</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Client approves invoice <span class="flow-tag tag-modified">Modified</span></div><div class="flow-subtitle">Client approves as normal. If an active directive exists for this IC, an informational banner is shown: "This contractor has an active payment directive. $X of this payment will be automatically paid to [authority] after disbursement." No action required from client at this step.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-green">3</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Client pays Deel <span class="flow-tag tag-unchanged">Unchanged</span></div><div class="flow-subtitle">Client pays Deel the full invoice amount as normal. No change to payment method, amount, or timing.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-blue">4</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Client submits payment directive <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">Client uploads the directive document (IWO, IRS levy notice, or UCC § 9-406 notice) in the new Payment Directives section. Client selects the affected contractor, enters directive details (assignee name, total amount, payment method preference), and submits for review. No payment is redirected at this point.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-blue">5</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Deel verifies the directive <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">Deel ops reviews within 3 business days. For IWOs and tax levies: verifies issuing authority and form validity. For UCC § 9-406 notices: confirms UCC-1 filing in public state records, document consistency, and assignee legitimacy. Assignee onboarded as verified payee (KYB + sanctions). Invalid directives rejected; payments continue to IC normally.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-blue">6</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">IC acknowledges the directive <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">IC receives in-platform notification and email in plain language. 5 business days to respond. Accept → directive activates next cycle. Dispute → paused, Deel steps back entirely, payments continue normally. No response after 5 days → activates by default (legal to confirm).</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-green">7</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Deel credits IC's Deel account — full invoice amount <span class="flow-tag tag-unchanged">Unchanged</span></div><div class="flow-subtitle">Deel disburses the full approved invoice amount to the IC's Deel account as normal. This step does not change.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-blue">8</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Ring-fence activates <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">Immediately upon credit, the directive amount is ring-fenced — not available for withdrawal. IC's balance shows: Total balance, Reserved (payment directive), and Available to withdraw separately. Ring-fence cannot be released until the automatic payment settles.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-blue">9</div><div class="step-connector"></div></div><div class="flow-content"><div class="flow-title">Automatic payment fires to authority / assignee <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">Ring-fenced amount remitted to verified payee (SDU, IRS EFTPS, assignee bank). Success: ring-fence released, both parties receive Payment Disbursement Advice. Failure: ring-fence maintained, 3 retries over 5 business days, ops escalation if all fail.</div></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="step-num step-num-amber">10</div></div><div class="flow-content"><div class="flow-title">Directive termination <span class="flow-tag tag-new">New</span></div><div class="flow-subtitle">Auto-terminates on: (a) balance satisfied, (b) written release from assignee, (c) IC dispute upheld, or (d) contract ends — Deel sends formal closure notice to assignee, remaining balance is between IC and assignee.</div></div></div>
+</div>
+
+<hr class="section-divider">
+<h2>5. Key design decisions</h2>
+
+<h3>Decision 1 — Do not show directive amounts on the IC's invoice</h3>
+<p>The IC's invoice states what the client owes for services rendered. Showing a directive as a line item makes it look like a payslip with a deduction — a misclassification signal. Directive amounts appear only in the Payment Disbursement Advice, separate from the invoice.</p>
+
+<h3>Decision 2 — Use "payment assignment directive," not "garnishment"</h3>
+<p>"Wage garnishment" is an employment law term. All product UI, notifications, and documentation should use <strong>payment assignment directive</strong> or <strong>income withholding order</strong> (for IWOs specifically).</p>
+
+<h3>Decision 3 — Deel acts only on client instruction, never unilaterally</h3>
+<p>Assignees cannot submit directives directly to Deel. The notice must come through the client. If an assignee contacts Deel directly claiming authority under a Power of Attorney, Deel refers them to the client.</p>
+
+<h3>Decision 4 — Directives don't apply to in-flight invoices until IC acknowledges</h3>
+<p>Invoices already approved at submission time are not subject to the directive until IC acknowledgment is complete. Invoices credited before the directive was received are not subject to it at all.</p>
+
+<h3>Decision 5 — No CCPA disposable income calculations for ICs</h3>
+<p>CCPA exemption floors are an employee concept. For ICs, Deel follows the order as written. For UCC § 9-406, the full payment is typically redirected until balance is satisfied.</p>
+
+<h3>Decision 6 — V1 scope is fixed contracts only for ICs</h3>
+<p>Fixed contracts map cleanly to IWO periods and assignment amounts. Pay-as-you-go and milestone contracts require service-period attribution logic not currently in Deel's infrastructure. These are Phase 2.</p>
+
+<hr class="section-divider">
+<h2>6. Payment calculation logic</h2>
+
+<table>
+  <thead><tr><th>Directive type</th><th>Amount structure</th><th>Protected floor?</th><th>Priority</th></tr></thead>
+  <tbody>
+    <tr><td><strong>IWO — child support</strong></td><td>Fixed dollar amount per pay period (e.g. $650/month). May carry two amounts: current support + arrears.</td><td>No CCPA floor for ICs. If invoice &lt; order amount, full invoice withheld; shortfall rolls into arrears.</td><td>Highest — except IRS levy entered before the child support order.</td></tr>
+    <tr><td><strong>IRS / state tax levy</strong></td><td>No fixed per-period amount. Levy seizes full payment unless partial release negotiated.</td><td>None. Can take 100% of payment.</td><td>Takes precedence over IWO only if levy predates the child support order.</td></tr>
+    <tr><td><strong>UCC § 9-406 assignment</strong></td><td>Total assigned amount ($19,447.38). Full payments redirected each cycle until balance hits zero.</td><td>None. IC may receive $0 across multiple cycles.</td><td>After IRS levy and IWO. Multiple UCC assignments by filing date.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-info">
+  <strong>Example — UCC § 9-406, $19,447.38 assigned:</strong><br>
+  Cycle 1: IC invoice $3,500 → full $3,500 to assignee → IC receives $0 → balance: $15,947.38<br>
+  Cycle 2: IC invoice $4,000 → full $4,000 to assignee → IC receives $0 → balance: $11,947.38<br>
+  Cycle 3: IC invoice $12,000 → $11,947.38 to assignee → IC receives $52.62 → balance: $0 → directive terminates
+</div>
+
+<hr class="section-divider">
+<h2>7. What changes and what doesn't</h2>
+
+<table>
+  <thead><tr><th>Component</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Invoice creation by IC</td><td><span class="b-badge b-badge-unchanged">Unchanged</span></td><td>No changes required</td></tr>
+    <tr><td>Line item management by client</td><td><span class="b-badge b-badge-unchanged">Unchanged</span></td><td>Ensure negative line items don't alter the assignment calculation base</td></tr>
+    <tr><td>Client approval of invoice</td><td><span class="b-badge b-badge-modified">Modified</span></td><td>Add informational directive banner when active directive exists</td></tr>
+    <tr><td>Client payment to Deel</td><td><span class="b-badge b-badge-unchanged">Unchanged</span></td><td>Full invoice amount, no change</td></tr>
+    <tr><td>Deel disbursement to IC account</td><td><span class="b-badge b-badge-unchanged">Unchanged</span></td><td>Full invoice amount credited — this step does not change</td></tr>
+    <tr><td>IC wallet balance display</td><td><span class="b-badge b-badge-modified">Modified</span></td><td>Show total, reserved, and available separately when directive active</td></tr>
+    <tr><td>IC payment notification</td><td><span class="b-badge b-badge-modified">Modified</span></td><td>Include directive split details and remaining balance</td></tr>
+    <tr><td>Payment Directives module</td><td><span class="b-badge b-badge-new">New</span></td><td>Client-facing upload, tracking, and management</td></tr>
+    <tr><td>Document verification workflow</td><td><span class="b-badge b-badge-new">New</span></td><td>Ops-facing; partially manual in v1</td></tr>
+    <tr><td>IC acknowledgment flow</td><td><span class="b-badge b-badge-new">New</span></td><td>Notification, accept / dispute, 5-day window</td></tr>
+    <tr><td>Ring-fence capability on IC wallet</td><td><span class="b-badge b-badge-new">New</span></td><td>Most critical engineering constraint — must be atomic at point of credit</td></tr>
+    <tr><td>Automatic outgoing payment from IC wallet</td><td><span class="b-badge b-badge-new">New</span></td><td>To verified external payee (SDU, IRS, assignee)</td></tr>
+    <tr><td>Payee onboarding (KYB + sanctions)</td><td><span class="b-badge b-badge-new">New</span></td><td>Assignees onboarded as payees before first disbursement</td></tr>
+    <tr><td>Running balance tracker</td><td><span class="b-badge b-badge-new">New</span></td><td>Visible to both client and IC</td></tr>
+    <tr><td>Payment Disbursement Advice</td><td><span class="b-badge b-badge-new">New</span></td><td>Document generated per cycle showing gross, redirected, net, and remaining balance</td></tr>
+    <tr><td>Auto-termination on balance = zero</td><td><span class="b-badge b-badge-new">New</span></td><td>Automatic; no manual intervention required</td></tr>
+    <tr><td>Failure handling and retry logic</td><td><span class="b-badge b-badge-new">New</span></td><td>3 attempts over 5 business days; ops escalation on exhaustion</td></tr>
+    <tr><td>Contract termination notification to assignee</td><td><span class="b-badge b-badge-new">New</span></td><td>Formal closure notice when IC contract ends before balance satisfied</td></tr>
+  </tbody>
+</table>
+
+<hr class="section-divider">
+<h2>8. Risk register</h2>
+
+<table class="risk-table">
+  <thead><tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
+  <tbody>
+    <tr><td>IC withdraws balance before ring-fence applies</td><td><span class="risk-high">High</span></td><td>Ring-fence must activate atomically at the moment of credit. Reserved amount is never available for withdrawal. Most critical engineering constraint in the feature.</td></tr>
+    <tr><td>Automatic payment to assignee fails</td><td><span class="risk-med">Medium</span></td><td>Retry logic (3 attempts, 5 business days). Ring-fence maintained throughout. Both parties notified. Deel does not release the reserved amount until payment succeeds or is manually resolved.</td></tr>
+    <tr><td>Fraudulent or disputed UCC § 9-406 notice</td><td><span class="risk-high">High</span></td><td>Deel verifies UCC-1 public filing before activating. IC acknowledgment step catches disputes. If IC disputes, Deel pays normally and steps back entirely.</td></tr>
+    <tr><td>IC has multiple overlapping directives</td><td><span class="risk-med">Medium</span></td><td>V1 data model supports multiple active directives per IC. Priority: IRS levy → IWO → others by filing date. Multi-directive cases handled manually in v1; automated logic in Phase 2.</td></tr>
+    <tr><td>Contract ends before directive balance satisfied</td><td><span class="risk-med">Medium</span></td><td>Deel auto-notifies assignee of contract termination, states total remitted, closes its obligation. Remaining balance is between IC and assignee.</td></tr>
+    <tr><td>MCA assignee attempts to instruct Deel directly (e.g., via POA)</td><td><span class="risk-med">Medium</span></td><td>All payment instructions come through the client only. Any direct contact from assignees referred to the client.</td></tr>
+    <tr><td>IC stops raising invoices to avoid directive</td><td><span class="risk-low">Low</span></td><td>IC acknowledgment makes clear their contractual obligation to raise invoices continues regardless. Terms of service to be updated.</td></tr>
+  </tbody>
+</table>
+
+<hr class="section-divider">
+<h2>9. Scope</h2>
+
+<div class="two-col">
+  <div class="scope-card in-scope">
+    <h4>In scope — v1</h4>
+    <ul>
+      <li>Income Withholding Orders (IWOs)</li>
+      <li>IRS and state tax levies</li>
+      <li>UCC § 9-406 commercial assignments</li>
+      <li>US only</li>
+      <li>IC fixed contracts only</li>
+      <li>CoR — all directive types</li>
+    </ul>
+  </div>
+  <div class="scope-card out-scope">
+    <h4>Out of scope — v1</h4>
+    <ul>
+      <li>Consumer debt garnishments for ICs</li>
+      <li>PAYG and milestone contract types</li>
+      <li>Non-US directives</li>
+      <li>Automated multi-directive priority logic</li>
+      <li>Direct assignee submission</li>
+      <li>Cross-contract balance sweeping</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="section-divider">
+<h2>10. Phasing</h2>
+
+<div class="phase-row">
+  <div class="phase-block phase-1">
+    <div class="phase-label">Phase 1</div>
+    <div class="phase-title">CoR — fastest to market</div>
+    <div class="phase-detail">Deel is already employer of record. Full directive support — IWOs, IRS levies, consumer debt. Satisfies the immediate client deal if contractors are on CoR.</div>
+  </div>
+  <div class="phase-block phase-2">
+    <div class="phase-label">Phase 2</div>
+    <div class="phase-title">IC — fixed contracts</div>
+    <div class="phase-detail">IWOs, IRS levies, UCC § 9-406. Fixed contracts only. Ring-fence mechanic, automatic wallet payment. Legal review across CA, TX, NY, FL before launch.</div>
+  </div>
+  <div class="phase-block phase-3">
+    <div class="phase-label">Phase 3</div>
+    <div class="phase-title">Expand IC scope</div>
+    <div class="phase-detail">PAYG and milestone contracts. Automated multi-directive priority logic. Consumer debt for CO and VA.</div>
+  </div>
+</div>
+
+<hr class="section-divider">
+<h2>11. Open questions</h2>
+
+<ol class="open-q">
+  <li>Is Deel the "account debtor" under UCC § 9-406, or is the client? This determines whether Deel has a direct legal obligation or is executing as a service on the client's behalf.</li>
+  <li>What is the correct default when the IC does not respond to the acknowledgment notification within 5 business days?</li>
+  <li>For IRS levies with no partial release, what is Deel's obligation if the levy would result in 100% redirection? Does Deel need to notify the IC before executing?</li>
+  <li>For the initial client deal — are contractors on standard IC contracts or CoR contracts?</li>
+  <li>What is Deel's liability exposure for IWOs and IRS levies that may have been served on Deel before this product was built?</li>
+  <li>Does Deel's current wallet infrastructure support atomic ring-fencing at the point of credit, or does this require new wallet architecture?</li>
+</ol>
+
+<hr class="section-divider">
+<h2>12. What this product does not do</h2>
+
+<ul>
+  <li>Deel does not adjudicate disputes between ICs and assignees or authorities</li>
+  <li>Deel does not verify the underlying debt — only that the directive document is valid and the filing exists</li>
+  <li>Deel does not accept directives directly from assignees — all instructions come through the client</li>
+  <li>Deel does not apply CCPA disposable income calculations to ICs</li>
+  <li>Deel does not do new hire reporting on behalf of clients as part of this feature</li>
+  <li>Deel does not enforce MCA default remedies (e.g., Power of Attorney provisions) on behalf of assignees</li>
+  <li>Deel does not market this capability as "payroll garnishment" in any IC-facing context</li>
+</ul>
+
+<div class="b-footer">
+  <span>Payment Assignment Directives — Product Brief v0.1</span>
+  <span>Deel Product Operations · April 2026 · Draft</span>
+</div>
+
+</div><!-- /brief-wrap -->
+</div><!-- /view-brief -->
+
+<!-- ══════════════════════════════════════════
+     VIEW — PROTOTYPE
+     ══════════════════════════════════════════ -->
+<div class="view" id="view-proto">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-mark"><span>D</span></div>
+          <span class="logo-name">Deel</span>
+          <span class="logo-badge">Prototype</span>
+        </div>
+        <div class="perspective-label">View as</div>
+        <div class="perspective-tabs">
+          <button class="ptab ptab-client active" onclick="setPerspective('client')"><span class="pdot"></span> Client (OnTrac)</button>
+          <button class="ptab ptab-ic" onclick="setPerspective('ic')"><span class="pdot"></span> Contractor (Jenniffer)</button>
+          <button class="ptab ptab-ops" onclick="setPerspective('ops')"><span class="pdot"></span> Deel Ops</button>
+        </div>
+      </div>
+      <div class="sidebar-steps">
+        <div class="steps-label">Flow steps</div>
+        <div id="stepList"></div>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-breadcrumb">Contractors / <span id="topbarContext">Payment Directives</span></span>
+          <span class="step-counter" id="stepCounter">Step 1 of 10</span>
+        </div>
+        <div class="topbar-right">
+          <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>← Previous</button>
+          <button class="nav-btn primary" id="nextBtn" onclick="navigate(1)">Next →</button>
+        </div>
+      </div>
+      <div class="content" id="mainContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+     ══════════════════════════════════════════ -->
+<script>
+// ── View switching ──
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.gnav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.getElementById('tab-' + v).classList.add('active');
+  if (v === 'proto') { render(); }
+}
+
+// ── Prototype logic ──
+const STEPS = [
+  { id:1,  name:"IC raises invoice",        party:"Contractor", perspective:"ic"     },
+  { id:2,  name:"Client approves invoice",  party:"Client",     perspective:"client" },
+  { id:3,  name:"Client pays Deel",         party:"Client",     perspective:"client" },
+  { id:4,  name:"Client submits directive", party:"Client",     perspective:"client" },
+  { id:5,  name:"Deel verifies directive",  party:"Deel Ops",   perspective:"ops"    },
+  { id:6,  name:"IC acknowledges",          party:"Contractor", perspective:"ic"     },
+  { id:7,  name:"Deel credits IC account",  party:"Deel / IC",  perspective:"ic"     },
+  { id:8,  name:"Ring-fence activates",     party:"System",     perspective:"ic"     },
+  { id:9,  name:"Auto payment fires",       party:"System",     perspective:"ops"    },
+  { id:10, name:"Directive terminates",     party:"System",     perspective:"client" },
+];
+
+let currentStep = 1;
+let currentPerspective = 'client';
+
+function setPerspective(p) {
+  currentPerspective = p;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.ptab-' + p).classList.add('active');
+  render();
+}
+
+function navigate(dir) {
+  const next = currentStep + dir;
+  if (next < 1 || next > 10) return;
+  currentStep = next;
+  render();
+}
+
+function gotoStep(s) { currentStep = s; render(); }
+
+function render() {
+  document.getElementById('stepCounter').textContent = `Step ${currentStep} of 10`;
+  document.getElementById('prevBtn').disabled = currentStep === 1;
+  document.getElementById('nextBtn').disabled = currentStep === 10;
+  document.getElementById('nextBtn').textContent = currentStep === 10 ? 'Done ✓' : 'Next →';
+  document.getElementById('topbarContext').textContent = STEPS[currentStep - 1].name;
+
+  const list = document.getElementById('stepList');
+  list.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const done = i + 1 < currentStep, active = i + 1 === currentStep, isLast = i === STEPS.length - 1;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;';
+    const item = document.createElement('div');
+    item.className = 'step-item' + (active ? ' active' : '') + (done ? ' done' : '');
+    item.onclick = () => gotoStep(i + 1);
+    item.innerHTML = `<div class="step-line-wrap"><div class="step-dot">${done ? '✓' : s.id}</div>${!isLast ? '<div class="step-connector-v"></div>' : ''}</div><div class="step-info"><div class="step-name">${s.name}</div><div class="step-party">${s.party}</div></div>`;
+    wrap.appendChild(item);
+    list.appendChild(wrap);
+  });
+
+  const screens = { client: [s1c, s2c, s3c, s4c, s5c, s6c, s7c, s8c, s9c, s10c], ic: [s1i, s2i, na, na, s5i, s6i, s7i, s8i, s9i, s10i], ops: [na, na, na, s4o, s5o, s6o, s7o, s8o, s9o, s10o] };
+  const fn = screens[currentPerspective][currentStep - 1];
+  document.getElementById('mainContent').innerHTML = fn ? fn() : na();
+}
+
+function na() { return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:12px;"><div style="font-size:36px;">—</div><div style="font-size:16px;font-weight:600;color:var(--text-primary);">No action in this step</div><div style="font-size:13px;color:var(--text-muted);">This step is handled by another party.</div></div>`; }
+
+function pov(a) {
+  const ps = [{k:'client',l:'Client (OnTrac)'},{k:'ic',l:'Contractor (Jenniffer)'},{k:'ops',l:'Deel Ops'}];
+  return `<div class="pov-strip">${ps.map(p=>`<div class="pov-item ${a===p.k?'active':''}" onclick="setPerspective('${p.k}')" style="cursor:pointer;"><div class="pov-role">${a===p.k?'You are':'Switch to'}</div>${p.l}</div>`).join('')}</div>`;
+}
+
+// CLIENT SCREENS
+function s1c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Invoices</div><div class="screen-subtitle">Contractors have submitted the following invoices for your review.</div><div class="card"><div class="card-title">Pending invoices</div><table class="data-table"><thead><tr><th>Invoice</th><th>Contractor</th><th>Contract</th><th>Period</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr><td style="font-family:'DM Mono',monospace;">#INV-2844</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar">JP</div><div><div style="font-weight:600;">Jenniffer Planet LLC</div><div style="font-size:11px;color:var(--text-muted);">Columbus, OH</div></div></div></td><td>Last Mile Delivery</td><td>Mar 1–31, 2026</td><td style="font-weight:600;font-family:'DM Mono',monospace;">$3,500.00</td><td><span class="p-badge p-badge-pending"><span class="p-badge-dot"></span>Awaiting review</span></td></tr></tbody></table></div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>Jenniffer Planet LLC has raised invoice #INV-2844 for $3,500.00. Awaiting your review and approval.</div></div></div>`; }
+
+function s2c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Review invoice #INV-2844</div><div class="screen-subtitle">Jenniffer Planet LLC · March 2026</div><div class="alert alert-warning"><span class="alert-icon">⚠️</span><div><strong>Active payment directive on this contractor.</strong> $3,500.00 of this disbursement will be automatically remitted to East Shore Equities SMB, LLC after payment is processed. This does not affect the amount you owe.</div></div><div class="card"><div class="card-title">Invoice details</div><div class="field-row"><div class="field"><div class="field-label">Invoice no.</div><div class="field-value mono">#INV-2844</div></div><div class="field"><div class="field-label">Contractor</div><div class="field-value">Jenniffer Planet LLC</div></div><div class="field"><div class="field-label">Period</div><div class="field-value">March 1–31, 2026</div></div><div class="field"><div class="field-label">Total</div><div class="field-value mono" style="font-size:20px;font-weight:700;">$3,500.00</div></div></div></div><div style="display:flex;gap:12px;justify-content:flex-end;"><button class="btn btn-dispute">Reject</button><button class="btn btn-accept" onclick="navigate(1)">Approve invoice</button></div></div>`; }
+
+function s3c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Payment confirmation</div><div class="screen-subtitle">Invoice #INV-2844 approved — payment to Deel initiated.</div><div class="card"><div class="card-title">Payment summary</div><div class="field-row"><div class="field"><div class="field-label">Paying to</div><div class="field-value">Deel Inc. (payment agent)</div></div><div class="field"><div class="field-label">Amount</div><div class="field-value mono" style="font-size:20px;font-weight:700;">$3,500.00</div></div><div class="field"><div class="field-label">Method</div><div class="field-value">ACH debit — ••••4821</div></div><div class="field"><div class="field-label">Settlement</div><div class="field-value">April 22, 2026</div></div></div></div><div class="alert alert-success"><span class="alert-icon">✅</span><div>Payment of <strong>$3,500.00</strong> sent to Deel. Deel will disburse to the contractor and process the active payment directive automatically.</div></div></div>`; }
+
+function s4c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Submit payment directive</div><div class="screen-subtitle">Upload a UCC § 9-406 notice, IWO, or IRS levy to redirect contractor payments.</div><div class="card"><div class="card-title">1 — Upload document</div><div class="uploaded-file"><span style="font-size:20px;">📄</span><div><div style="font-size:13px;font-weight:500;">2026-03-23_Jenniffer_Planet_LLC_UCC_Lien_Notice.pdf</div><div style="font-size:11px;color:var(--text-muted);">4 pages · 312 KB</div></div><span class="file-check">✓</span></div></div><div class="card"><div class="card-title">2 — Select contractor</div><div class="contractor-select"><div class="avatar">JP</div><div><div class="contractor-name">Jenniffer Planet LLC</div><div class="contractor-meta">EIN 87-3358650 · Columbus, OH · Fixed contract</div></div><div class="check-mark">✓</div></div></div><div class="card"><div class="card-title">3 — Directive details</div><div class="field-row"><div class="input-group"><label class="input-label">Type</label><select class="input-field"><option>UCC § 9-406 Commercial Assignment</option><option>Income Withholding Order (IWO)</option><option>IRS Tax Levy</option></select></div><div class="input-group"><label class="input-label">Lien reference</label><input class="input-field" value="SMB-9406-022626" readonly></div><div class="input-group"><label class="input-label">Assignee</label><input class="input-field" value="East Shore Equities SMB, LLC" readonly></div><div class="input-group"><label class="input-label">Total assigned amount</label><input class="input-field" value="$19,447.38" readonly></div></div></div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>Deel will verify this directive against public UCC records before activating. Contractor will be notified and asked to acknowledge. No payments redirected until both steps complete.</div></div><div style="display:flex;justify-content:flex-end;"><button class="btn btn-accept" onclick="navigate(1)">Submit for review →</button></div></div>`; }
+
+function s5c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Directive under review</div><div class="screen-subtitle">Deel is verifying the document. Payments continue normally until complete.</div><div class="alert alert-warning"><span class="alert-icon">⏳</span><div>Your directive is under review. Expected: within 3 business days.</div></div><div class="card"><div class="card-title">Review status</div><div class="check-list"><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Document received and logged</div><div class="check-item-sub">April 20, 2026 · 9:22 AM</div></div></div><div class="check-item pending"><div class="check-status">…</div><div><div class="check-item-text">UCC-1 public filing verification</div><div class="check-item-sub">Checking Ohio Secretary of State records</div></div></div><div class="check-item pending"><div class="check-status">…</div><div><div class="check-item-text">Assignee KYB and sanctions screening</div><div class="check-item-sub">East Shore Equities SMB, LLC</div></div></div><div class="check-item pending"><div class="check-status">…</div><div><div class="check-item-text">Contractor notification pending</div></div></div></div></div></div>`; }
+
+function s6c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Awaiting IC acknowledgment</div><div class="screen-subtitle">Directive verified. Waiting for Jenniffer Planet LLC to acknowledge.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>Directive verified. UCC-1 confirmed (OH FS# OH00296077906). East Shore Equities SMB, LLC onboarded as verified payee. Contractor notified.</div></div><div class="card"><div class="card-title">Acknowledgment status</div><div class="field-row"><div class="field"><div class="field-label">Notified</div><div class="field-value">April 21, 2026</div></div><div class="field"><div class="field-label">Deadline</div><div class="field-value">April 28, 2026</div></div><div class="field"><div class="field-label">Response</div><div class="field-value"><span class="p-badge p-badge-pending"><span class="p-badge-dot"></span>Pending</span></div></div><div class="field"><div class="field-label">Default on no response</div><div class="field-value">Directive activates</div></div></div></div></div>`; }
+
+function s7c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Invoice disbursed</div><div class="screen-subtitle">Deel credited $3,500.00 to contractor's Deel account. Ring-fence active.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>Invoice #INV-2844 disbursed in full. Payment directive ring-fence is now active. Auto-payment to assignee is queued.</div></div><div class="card"><div class="card-title">Disbursement record</div><div class="field-row"><div class="field"><div class="field-label">Disbursed</div><div class="field-value mono">$3,500.00</div></div><div class="field"><div class="field-label">Ring-fenced</div><div class="field-value"><span class="p-badge p-badge-review"><span class="p-badge-dot"></span>$3,500.00 reserved</span></div></div><div class="field"><div class="field-label">Auto payment</div><div class="field-value"><span class="p-badge p-badge-pending"><span class="p-badge-dot"></span>Queued</span></div></div></div></div></div>`; }
+
+function s8c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Ring-fence active</div><div class="screen-subtitle">$3,500.00 reserved in contractor's Deel account pending remittance.</div><div class="card"><div class="card-title">Directive balance tracker</div><div class="balance-tracker"><div class="field-row" style="margin-bottom:12px;"><div class="field"><div class="field-label">Total assigned</div><div class="field-value mono">$19,447.38</div></div><div class="field"><div class="field-label">Remitted to date</div><div class="field-value mono">$0.00</div></div><div class="field"><div class="field-label">This cycle</div><div class="field-value mono" style="color:var(--amber);">$3,500.00</div></div><div class="field"><div class="field-label">Remaining after</div><div class="field-value mono">$15,947.38</div></div></div><div class="tracker-bar-wrap"><div class="tracker-bar-bg"><div class="tracker-bar-fill" style="width:0%;"></div></div></div><div class="tracker-labels"><span>$0 remitted</span><span>$19,447.38 total</span></div></div></div></div>`; }
+
+function s9c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Remittance complete</div><div class="screen-subtitle">$3,500.00 sent to East Shore Equities SMB, LLC. Balance updated.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>ACH payment of <strong>$3,500.00</strong> remitted. Directive balance: $15,947.38 remaining.</div></div><div class="card"><div class="card-title">Balance tracker</div><div class="balance-tracker"><div class="field-row" style="margin-bottom:12px;"><div class="field"><div class="field-label">Total assigned</div><div class="field-value mono">$19,447.38</div></div><div class="field"><div class="field-label">Remitted</div><div class="field-value mono" style="color:var(--deel-green-dark);">$3,500.00</div></div><div class="field"><div class="field-label">Remaining</div><div class="field-value mono">$15,947.38</div></div></div><div class="tracker-bar-wrap"><div class="tracker-bar-bg"><div class="tracker-bar-fill" style="width:18%;"></div></div></div><div class="tracker-labels"><span>$3,500 remitted (18%)</span><span>$15,947.38 remaining</span></div></div></div></div>`; }
+
+function s10c() { return `${pov('client')}<div class="screen active"><div class="screen-title">Directive overview</div><div class="screen-subtitle">Track the directive across cycles until balance is satisfied.</div><div class="three-col" style="margin-bottom:16px;"><div class="stat-card"><div class="stat-label">Total assigned</div><div class="stat-value">$19,447</div><div class="stat-sub">East Shore Equities</div></div><div class="stat-card"><div class="stat-label">Remitted to date</div><div class="stat-value" style="color:var(--deel-green-dark);">$3,500</div><div class="stat-sub">1 cycle completed</div></div><div class="stat-card"><div class="stat-label">Remaining</div><div class="stat-value" style="color:var(--amber);">$15,947</div><div class="stat-sub">~5 cycles at current rate</div></div></div><div class="card"><div class="card-title">Cycle history</div><table class="data-table"><thead><tr><th>Cycle</th><th>Invoice</th><th>Amount</th><th>Remitted</th><th>IC received</th><th>Balance</th></tr></thead><tbody><tr><td>April 2026</td><td style="font-family:'DM Mono',monospace;">#INV-2844</td><td style="font-family:'DM Mono',monospace;">$3,500.00</td><td style="font-family:'DM Mono',monospace;color:var(--amber);">$3,500.00</td><td style="font-family:'DM Mono',monospace;color:var(--text-muted);">$0.00</td><td style="font-family:'DM Mono',monospace;">$15,947.38</td></tr></tbody></table></div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>Directive auto-terminates when $19,447.38 balance reaches zero. No further action required.</div></div></div>`; }
+
+// IC SCREENS
+function s1i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Create invoice</div><div class="screen-subtitle">Raise your March 2026 invoice to OnTrac Final Mile.</div><div class="card"><div class="card-title">Invoice details</div><div class="field-row"><div class="input-group"><label class="input-label">Client</label><input class="input-field" value="LaserShip, Inc. D/B/A OnTrac Final Mile" readonly></div><div class="input-group"><label class="input-label">Contract</label><input class="input-field" value="Last Mile Delivery — Fixed (Monthly)" readonly></div><div class="input-group"><label class="input-label">Period</label><input class="input-field" value="March 1–31, 2026" readonly></div><div class="input-group"><label class="input-label">Amount</label><input class="input-field" value="$3,500.00" style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace;"></div></div></div><div style="display:flex;justify-content:flex-end;"><button class="btn btn-accept" onclick="navigate(1)">Submit invoice →</button></div></div>`; }
+
+function s2i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Invoice submitted</div><div class="screen-subtitle">Awaiting client approval from OnTrac.</div><div class="alert alert-info"><span class="alert-icon">⏳</span><div>Invoice #INV-2844 for $3,500.00 submitted. You'll be notified when it's approved.</div></div><div class="card"><div class="card-title">Invoice status</div><div class="field-row"><div class="field"><div class="field-label">Invoice no.</div><div class="field-value mono">#INV-2844</div></div><div class="field"><div class="field-label">Amount</div><div class="field-value mono" style="font-size:18px;">$3,500.00</div></div><div class="field"><div class="field-label">Status</div><div class="field-value"><span class="p-badge p-badge-pending"><span class="p-badge-dot"></span>Awaiting approval</span></div></div></div></div></div>`; }
+
+function s5i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">No action required</div><div class="screen-subtitle">Deel is reviewing a directive submitted for your account.</div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>A payment assignment directive has been submitted for your account. Deel is verifying the document. You'll receive a notification to acknowledge once verification is complete.</div></div></div>`; }
+
+function s6i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Action required</div><div class="screen-subtitle">A payment directive has been submitted for your Deel account. Please review and respond.</div><div class="notif-card"><div class="notif-header"><span class="notif-icon">⚠️</span><div class="notif-title">Payment assignment directive — acknowledgment required</div></div><div class="notif-body"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">OnTrac has submitted a commercial receivables assignment notice. This is based on a financing arrangement you previously entered into.</p><div class="notif-detail-row"><span class="notif-key">Document type</span><span class="notif-val">UCC § 9-406 Commercial Assignment</span></div><div class="notif-detail-row"><span class="notif-key">Assignee</span><span class="notif-val">East Shore Equities SMB, LLC</span></div><div class="notif-detail-row"><span class="notif-key">Lien reference</span><span class="notif-val" style="font-family:'DM Mono',monospace;">SMB-9406-022626</span></div><div class="notif-detail-row"><span class="notif-key">Total assigned</span><span class="notif-val" style="font-size:16px;font-family:'DM Mono',monospace;">$19,447.38</span></div><div class="notif-detail-row"><span class="notif-key">UCC-1 verified</span><span class="notif-val" style="color:var(--deel-green-dark);">✓ OH FS# OH00296077906</span></div><div class="notif-detail-row"><span class="notif-key">Response deadline</span><span class="notif-val">April 28, 2026</span></div><div class="notif-actions"><button class="btn btn-accept" onclick="navigate(1)">I recognise this arrangement →</button><button class="btn btn-dispute">Dispute this directive</button></div></div></div></div>`; }
+
+function s7i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Payment received</div><div class="screen-subtitle">Invoice #INV-2844 — $3,500.00 credited to your Deel account.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div><strong>$3,500.00 credited.</strong> Your active payment directive means $3,500.00 is currently reserved. See your balance below.</div></div><div class="wallet-card"><div class="wallet-label">Deel account balance</div><div class="wallet-total">$3,500.00</div><div class="wallet-breakdown"><div class="wallet-item"><div class="wallet-item-label">Reserved — directive</div><div class="wallet-item-value reserved">$3,500.00</div></div><div class="wallet-item"><div class="wallet-item-label">Available to withdraw</div><div class="wallet-item-value available">$0.00</div></div></div><div class="wallet-progress"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%;"></div></div><div class="progress-label"><span>$0 available</span><span>$19,447.38 directive balance</span></div></div></div></div>`; }
+
+function s8i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Ring-fence active</div><div class="screen-subtitle">$3,500.00 reserved pending automatic remittance to East Shore Equities.</div><div class="wallet-card"><div class="wallet-label">Deel account balance</div><div class="wallet-total">$3,500.00</div><div class="wallet-breakdown"><div class="wallet-item"><div class="wallet-item-label">Reserved — directive</div><div class="wallet-item-value reserved">$3,500.00</div></div><div class="wallet-item"><div class="wallet-item-label">Available to withdraw</div><div class="wallet-item-value available">$0.00</div></div></div></div><div class="alert alert-warning"><span class="alert-icon">🔒</span><div>$3,500.00 is reserved and cannot be withdrawn. An automatic payment is queued. Your available balance updates once payment settles.</div></div></div>`; }
+
+function s9i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Payment Disbursement Advice</div><div class="screen-subtitle">April 2026 — Invoice #INV-2844</div><div style="margin-bottom:16px;"><div class="advice-header"><div><div style="font-size:11px;opacity:0.5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Payment Disbursement Advice</div><div style="font-size:18px;font-weight:600;">Invoice #INV-2844</div><div style="font-size:12px;opacity:0.6;margin-top:4px;">April 20, 2026 · OnTrac Final Mile</div></div><div style="text-align:right;"><div style="font-size:11px;opacity:0.5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Directive ref.</div><div style="font-family:'DM Mono',monospace;font-size:13px;">SMB-9406-022626</div></div></div><div class="advice-body"><div class="advice-row"><span>Gross invoice amount</span><span style="font-family:'DM Mono',monospace;">$3,500.00</span></div><div class="advice-row redirected"><span>Remitted to East Shore Equities SMB, LLC</span><span style="font-family:'DM Mono',monospace;">-$3,500.00</span></div><div class="advice-row received total"><span>Net available to you</span><span style="font-family:'DM Mono',monospace;color:var(--deel-green-dark);">$0.00</span></div><hr style="border:none;border-top:1px solid var(--border);margin:12px 0;"><div class="advice-row"><span>Directive balance before</span><span style="font-family:'DM Mono',monospace;">$19,447.38</span></div><div class="advice-row"><span>Applied this cycle</span><span style="font-family:'DM Mono',monospace;">$3,500.00</span></div><div class="advice-row total"><span>Remaining directive balance</span><span style="font-family:'DM Mono',monospace;color:var(--amber);">$15,947.38</span></div></div></div><div class="wallet-card"><div class="wallet-label">Updated Deel account balance</div><div class="wallet-total">$0.00</div><div class="wallet-breakdown"><div class="wallet-item"><div class="wallet-item-label">Reserved</div><div class="wallet-item-value reserved">$0.00</div></div><div class="wallet-item"><div class="wallet-item-label">Available to withdraw</div><div class="wallet-item-value available">$0.00</div></div></div><div class="wallet-progress"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:18%;"></div></div><div class="progress-label"><span>$3,500 remitted (18%)</span><span>$15,947 remaining</span></div></div></div></div>`; }
+
+function s10i() { return `${pov('ic')}<div class="screen active"><div class="screen-title">Directive in progress</div><div class="screen-subtitle">Your directive will continue until the $19,447.38 balance is satisfied.</div><div class="card"><div class="card-title">Payment timeline</div><div class="timeline"><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-time">Apr 20, 2026</div><div class="tl-event">Cycle 1 — $3,500.00 remitted</div><div class="tl-detail">Balance: $15,947.38 remaining</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot pending"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-time">May 2026</div><div class="tl-event">Cycle 2 — pending</div><div class="tl-detail">Next invoice not yet raised</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot pending"></div></div><div class="tl-content"><div class="tl-time">Est. ~Oct 2026</div><div class="tl-event">Directive balance satisfied</div><div class="tl-detail">Full payments resume automatically</div></div></div></div></div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>Your obligation to raise invoices on schedule continues during the directive period. Full payments resume automatically once the balance reaches zero.</div></div></div>`; }
+
+// OPS SCREENS
+function s4o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">New directive received</div><div class="screen-subtitle">OnTrac has submitted a UCC § 9-406 notice for Jenniffer Planet LLC.</div><div class="alert alert-warning"><span class="alert-icon">🔔</span><div>New payment directive submitted. Verification required before activation. Contractor payments continue normally.</div></div><div class="card"><div class="card-title">Directive intake</div><div class="field-row"><div class="field"><div class="field-label">Submitted by</div><div class="field-value">OnTrac Final Mile</div></div><div class="field"><div class="field-label">Document type</div><div class="field-value">UCC § 9-406 Notice</div></div><div class="field"><div class="field-label">Contractor</div><div class="field-value">Jenniffer Planet LLC · EIN 87-3358650</div></div><div class="field"><div class="field-label">Assignee</div><div class="field-value">East Shore Equities SMB, LLC</div></div><div class="field"><div class="field-label">Total amount</div><div class="field-value mono">$19,447.38</div></div><div class="field"><div class="field-label">Lien reference</div><div class="field-value mono">SMB-9406-022626</div></div></div></div></div>`; }
+
+function s5o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Directive verification</div><div class="screen-subtitle">Verify the UCC § 9-406 notice and onboard the assignee as a payee.</div><div class="card"><div class="card-title">Verification checklist</div><div class="check-list"><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Document type confirmed — UCC § 9-406 commercial assignment</div><div class="check-item-sub">Not a government order. Executes on client instruction.</div></div></div><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Contractor identity matched — EIN 87-3358650 confirmed</div><div class="check-item-sub">Jenniffer Planet LLC / Jenniffer Pilar Silvestre DBA Jenniffer Planet LLC</div></div></div><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">UCC-1 filing verified — Ohio Secretary of State</div><div class="check-item-sub">FS# OH00296077906 · Filed: February 2, 2026</div></div></div><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Document consistency confirmed</div><div class="check-item-sub">Security Agreement, Assignment of Accounts Receivable, and UCC-1 consistent</div></div></div><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Assignee KYB passed — East Shore Equities SMB, LLC</div><div class="check-item-sub">Centereach, NY · No sanctions matches</div></div></div><div class="check-item pass"><div class="check-status">✓</div><div><div class="check-item-text">Assignee payment details collected</div><div class="check-item-sub">ACH routing and account verified</div></div></div></div></div><div class="alert alert-success"><span class="alert-icon">✅</span><div>All checks passed. Proceeding to contractor notification.</div></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-dispute">Reject directive</button><button class="btn btn-accept" onclick="navigate(1)">Approve and notify contractor →</button></div></div>`; }
+
+function s6o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Contractor notified</div><div class="screen-subtitle">Acknowledgment request sent to Jenniffer Planet LLC.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>In-platform notification and email sent. 5-business-day acknowledgment window opened.</div></div><div class="card"><div class="card-title">Acknowledgment monitor</div><div class="field-row"><div class="field"><div class="field-label">Notification sent</div><div class="field-value">April 21, 2026</div></div><div class="field"><div class="field-label">Response deadline</div><div class="field-value">April 28, 2026</div></div><div class="field"><div class="field-label">Status</div><div class="field-value"><span class="p-badge p-badge-pending"><span class="p-badge-dot"></span>Pending</span></div></div><div class="field"><div class="field-label">Default on no response</div><div class="field-value">Activate after 5 days</div></div></div></div><div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>If contractor disputes, directive is paused and client notified. Deel does not adjudicate the dispute.</div></div></div>`; }
+
+function s7o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Directive active</div><div class="screen-subtitle">Contractor acknowledged. Directive is active on this contract.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>Contractor acknowledged on April 22, 2026. Ring-fence will activate on next disbursement.</div></div><div class="card"><div class="card-title">Active directive record</div><div class="field-row"><div class="field"><div class="field-label">Directive ID</div><div class="field-value mono">DIR-2026-0041</div></div><div class="field"><div class="field-label">Status</div><div class="field-value"><span class="p-badge p-badge-active"><span class="p-badge-dot"></span>Active</span></div></div><div class="field"><div class="field-label">Contractor</div><div class="field-value">Jenniffer Planet LLC</div></div><div class="field"><div class="field-label">Assignee</div><div class="field-value">East Shore Equities SMB, LLC</div></div><div class="field"><div class="field-label">Total assigned</div><div class="field-value mono">$19,447.38</div></div><div class="field"><div class="field-label">Activated</div><div class="field-value">April 22, 2026</div></div></div></div></div>`; }
+
+function s8o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Ring-fence monitoring</div><div class="screen-subtitle">$3,500.00 credited to IC, ring-fence applied, auto-payment queued.</div><div class="three-col" style="margin-bottom:16px;"><div class="stat-card"><div class="stat-label">Disbursed to IC</div><div class="stat-value">$3,500</div><div class="stat-sub">Full invoice amount</div></div><div class="stat-card"><div class="stat-label">Ring-fenced</div><div class="stat-value" style="color:var(--amber);">$3,500</div><div class="stat-sub">Pending remittance</div></div><div class="stat-card"><div class="stat-label">Auto-payment</div><div class="stat-value" style="color:var(--blue);font-size:16px;">Queued</div><div class="stat-sub">East Shore Equities</div></div></div><div class="card"><div class="card-title">Ring-fence status</div><div class="check-list"><div class="check-item pass"><div class="check-status">✓</div><div class="check-item-text">$3,500.00 credited to IC's Deel wallet</div></div><div class="check-item pass"><div class="check-status">✓</div><div class="check-item-text">$3,500.00 ring-fenced atomically — not available for withdrawal</div></div><div class="check-item pending"><div class="check-status">…</div><div class="check-item-text">ACH payment to East Shore Equities — processing</div></div></div></div></div>`; }
+
+function s9o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Remittance complete</div><div class="screen-subtitle">$3,500.00 successfully remitted. Ring-fence released.</div><div class="alert alert-success"><span class="alert-icon">✅</span><div>ACH payment settled. Ring-fence released. IC balance updated. Directive balance: $15,947.38.</div></div><div class="card"><div class="card-title">Remittance log</div><div class="timeline"><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-time">Apr 20 · 9:14 AM</div><div class="tl-event">Invoice #INV-2844 approved by OnTrac</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-time">Apr 20 · 2:30 PM</div><div class="tl-event">$3,500.00 credited to IC's Deel account</div><div class="tl-detail">Ring-fence applied atomically</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-time">Apr 20 · 2:31 PM</div><div class="tl-event">ACH initiated — East Shore Equities SMB, LLC</div><div class="tl-detail">$3,500.00 · Ref #ACH-2026-8841</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-time">Apr 22 · 8:00 AM</div><div class="tl-event">ACH settled — remittance confirmed</div><div class="tl-detail">Balance updated: $19,447.38 → $15,947.38</div></div></div></div></div></div>`; }
+
+function s10o() { return `${pov('ops')}<div class="screen active"><div class="screen-title">Directive dashboard</div><div class="screen-subtitle">Monitor all active payment directives across the platform.</div><div class="card"><div class="card-title">Active directives</div><table class="data-table"><thead><tr><th>Directive ID</th><th>Contractor</th><th>Client</th><th>Assignee</th><th>Total</th><th>Remitted</th><th>Remaining</th><th>Status</th></tr></thead><tbody><tr><td style="font-family:'DM Mono',monospace;">DIR-2026-0041</td><td><div style="font-weight:600;">Jenniffer Planet LLC</div><div style="font-size:11px;color:var(--text-muted);">EIN 87-3358650</div></td><td>OnTrac Final Mile</td><td>East Shore Equities SMB</td><td style="font-family:'DM Mono',monospace;">$19,447</td><td style="font-family:'DM Mono',monospace;color:var(--deel-green-dark);">$3,500</td><td style="font-family:'DM Mono',monospace;color:var(--amber);">$15,947</td><td><span class="p-badge p-badge-active"><span class="p-badge-dot"></span>Active</span></td></tr></tbody></table></div><div class="three-col"><div class="stat-card"><div class="stat-label">Active directives</div><div class="stat-value">1</div></div><div class="stat-card"><div class="stat-label">Total remitted (MTD)</div><div class="stat-value">$3,500</div></div><div class="stat-card"><div class="stat-label">Pending verification</div><div class="stat-value">0</div></div></div></div>`; }
+
+// Init prototype (renders when tab is clicked)
+</script>
+</body>
+</html>
